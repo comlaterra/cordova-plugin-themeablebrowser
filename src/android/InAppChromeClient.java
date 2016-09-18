@@ -18,27 +18,30 @@
 */
 package com.initialxy.cordova.themeablebrowser;
 
+import android.view.View;
+import android.webkit.GeolocationPermissions.Callback;
+import android.webkit.JsPromptResult;
+import android.webkit.WebChromeClient;
+import android.webkit.WebStorage;
+import android.webkit.WebView;
+import android.widget.ProgressBar;
+
 import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.LOG;
 import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONException;
 
-import android.webkit.JsPromptResult;
-import android.webkit.WebChromeClient;
-import android.webkit.WebStorage;
-import android.webkit.WebView;
-import android.webkit.GeolocationPermissions.Callback;
-
 public class InAppChromeClient extends WebChromeClient {
 
     private CordovaWebView webView;
     private String LOG_TAG = "InAppChromeClient";
     private long MAX_QUOTA = 100 * 1024 * 1024;
-
-    public InAppChromeClient(CordovaWebView webView) {
+    private ProgressBar progressbar;
+    public InAppChromeClient(CordovaWebView webView,ProgressBar progressbar) {
         super();
         this.webView = webView;
+        this.progressbar=progressbar;
     }
     /**
      * Handle database quota exceeded notification.
@@ -52,7 +55,7 @@ public class InAppChromeClient extends WebChromeClient {
      */
     @Override
     public void onExceededDatabaseQuota(String url, String databaseIdentifier, long currentQuota, long estimatedSize,
-            long totalUsedQuota, WebStorage.QuotaUpdater quotaUpdater)
+                                        long totalUsedQuota, WebStorage.QuotaUpdater quotaUpdater)
     {
         LOG.d(LOG_TAG, "onExceededDatabaseQuota estimatedSize: %d  currentQuota: %d  totalUsedQuota: %d", estimatedSize, currentQuota, totalUsedQuota);
         quotaUpdater.updateQuota(MAX_QUOTA);
@@ -121,12 +124,22 @@ public class InAppChromeClient extends WebChromeClient {
             else
             {
                 // Anything else with a gap: prefix should get this message
-                LOG.w(LOG_TAG, "ThemeableBrowser does not support Cordova API calls: " + url + " " + defaultValue); 
+                LOG.w(LOG_TAG, "ThemeableBrowser does not support Cordova API calls: " + url + " " + defaultValue);
                 result.cancel();
                 return true;
             }
         }
         return false;
     }
-
+    @Override
+    public void onProgressChanged(WebView view, int newProgress) {
+        if (newProgress == 100) {
+            progressbar.setVisibility(View.GONE);
+        } else {
+            if (progressbar.getVisibility() == View.GONE)
+                progressbar.setVisibility(View.VISIBLE);
+            progressbar.setProgress(newProgress);
+        }
+        super.onProgressChanged(view, newProgress);
+    }
 }
