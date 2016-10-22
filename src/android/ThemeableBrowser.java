@@ -747,7 +747,7 @@ public class ThemeableBrowser extends CordovaPlugin {
                     }
                 }
                 final ProgressBar progressbar = new ProgressBar(cordova.getActivity(), null, android.R.attr.progressBarStyleHorizontal);
-                FrameLayout.LayoutParams progressbarLayout = new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, 6);
+                FrameLayout.LayoutParams progressbarLayout = new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, 10);
                 //progressbarLayout.
                 progressbar.setLayoutParams(progressbarLayout);
                 if (features.browserProgress != null){
